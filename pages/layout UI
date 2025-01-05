@@ -1,0 +1,138 @@
+@@'use client'
+
+import { useState } from 'react'
+import { Trash2, Send } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { UploadArea } from './components/upload-area'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+
+interface Receipt {
+  id: string
+  type: string
+  total: number
+  image: string
+}
+
+export default function ReceiptDashboard() {
+  const [question, setQuestion] = useState('')
+  const receipts: Receipt[] = [
+    { id: '1', type: 'Grocery Shop', total: 45.00, image: '/placeholder.svg?height=50&width=50' },
+    { id: '2', type: 'Restaurant Bill', total: 30.00, image: '/placeholder.svg?height=50&width=50' },
+  ]
+
+  const handleAskMore = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle the question submission here
+    console.log('Question asked:', question)
+    setQuestion('')
+  }
+
+  return (
+    <div className="max-w-[1400px] mx-auto p-4 space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold">ReceiptGenius</h1>
+        <nav className="flex gap-4">
+          <Button variant="ghost">Home</Button>
+          <Button variant="ghost" className="bg-primary/10 text-primary">Scanner</Button>
+          <Button variant="ghost">Dashboard</Button>
+          <Button variant="ghost">Profile</Button>
+        </nav>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="lg:col-span-1">
+          <CardContent className="p-6">
+            <h2 className="text-lg font-medium mb-4">Upload Receipt</h2>
+            <UploadArea />
+            <div className="mt-4 flex justify-center space-x-4">
+              <Button variant="default" className="bg-green-500 hover:bg-green-600 text-white">
+                Analyze Receipt
+              </Button>
+              <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
+                Test n8n
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-1">
+          <CardContent className="p-6 space-y-4">
+            <Tabs defaultValue="captured-details">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="captured-details">Captured Details</TabsTrigger>
+                <TabsTrigger value="insights">Insights</TabsTrigger>
+              </TabsList>
+              <TabsContent value="captured-details">
+                <h2 className="text-lg font-medium mt-4">AI Analyzer - Captured Details</h2>
+                <Textarea 
+                  readOnly
+                  className="min-h-[200px] bg-muted"
+                  value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis libero at nunc tincidunt, et ultricies tellus aliquam."
+                />
+              </TabsContent>
+              <TabsContent value="insights">
+                <h2 className="text-lg font-medium mt-4">AI Analyzer - Insights</h2>
+                <Textarea 
+                  readOnly
+                  className="min-h-[200px] bg-muted"
+                  value="Here are some insights based on the captured details..."
+                />
+              </TabsContent>
+            </Tabs>
+
+            <form onSubmit={handleAskMore} className="flex gap-2">
+              <Input
+                placeholder="Ask more about these details..."
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="flex-1"
+              />
+              <Button type="submit" disabled={!question.trim()}>
+                <Send className="h-4 w-4 mr-2" />
+                Ask
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardContent className="p-6">
+          <h2 className="text-lg font-medium mb-4">Scanned Receipts</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {receipts.map((receipt) => (
+              <Card key={receipt.id} className="transition-shadow hover:shadow-md">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={receipt.image}
+                        alt={receipt.type}
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                      <div>
+                        <h3 className="font-medium">{receipt.type}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Total: ${receipt.total.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="secondary">Review</Button>
+                      <Button variant="destructive" size="icon">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
